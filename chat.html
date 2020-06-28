@@ -8,6 +8,7 @@
       crossorigin="anonymous"
     ></script>
     <title>KAKAO-CLONE-PROJECT</title>
+    <link rel="stylesheet" href="css/style.css" />
   </head>
 
   <bdoy>
@@ -26,8 +27,8 @@
     </div>
     <header class="header">
       <div class="header__column">
-        <a href="index.html">
-          <i class="fas fa-arrow-left fa-2x"></i>
+        <a href="index.html" class="header__back-btn">
+          <i class="fas fa-arrow-left"></i>
         </a>
 
         <h1 class="header__title">Best Friends!!</h1>
@@ -71,33 +72,24 @@
     </main>
 
     <div class="chat__write">
-
-        <div class="chat__write-column">
-            <i class="fas fa-plus-square"></i>
-        </div>
-        <div class="chat__write-column">
-
-            <input type="text" class="chat__input-area" placeholder="Send message">
-
-
-        </div>
-        <div class="chat__write-column">
-            <span class="chat__write-icon">
-                <i class="far fa-smile"></i>
-            </span>
-            <span class="chat__write-icon">
-                <i class="fas fa-microphone"></i>
-            </span>
-        </div>
-
-
-
-
-
+      <div class="chat__write-column">
+        <i class="fas fa-plus-square"></i>
+      </div>
+      <div class="chat__write-column">
+        <input
+          type="text"
+          class="chat__input-area"
+          placeholder="Send message"
+        />
+      </div>
+      <div class="chat__write-column">
+        <span class="chat__write-icon">
+          <i class="far fa-smile"></i>
+        </span>
+        <span class="chat__write-icon">
+          <i class="fas fa-microphone"></i>
+        </span>
+      </div>
     </div>
-
-
-
-
   </bdoy>
 </html>

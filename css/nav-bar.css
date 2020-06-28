@@ -1,0 +1,51 @@
+.navigation {
+  position: fixed;
+  /*whenever you use position: fixed, */
+  /* you have to define width which is total box size of the this class */
+  width: 100%;
+  /* margin:20px 50px; */
+  padding: 20px 50px;
+  background-color: rgb(248, 240, 240);
+  bottom: 0px;
+  left: 0px;
+  border-top: 1px solid grey;
+  border-left: 10px solid gray;
+  border-right: 10px solid gray;
+  /*  height: 65.2px;  */
+  /*  height means total box size of the class .nav__list, each element which this class has has 16.3px as defalut value */
+}
+
+.navigation .nav__list {
+  display: flex;
+  justify-content: space-between;
+}
+
+.navigation i {
+  font-size: 20px;
+}
+
+ .navigation .nav__list-link {
+  position: relative;
+} 
+/* L Need to study more */
+
+.navigation .nav__badge {
+   position: absolute; 
+   top: -7px;
+  right: -7px;
+  font-size: 15px;
+  color: white;
+  background-color: #dc5d46;
+   width: 18px;
+  height: 18px;
+  text-align: center;
+
+  display: flex;
+
+  /* ////////////////////////////// */
+  justify-content: center;
+  align-items: center;
+  /* L Need to study more */
+  border-radius: 50%;
+  /* Total size of the with height */
+}
