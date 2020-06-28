@@ -3,6 +3,8 @@
 @import "header.css";
 @import "nav-bar.css";
 @import "friend.css";
+@import "more.css";
+@import "find.css";
 @import url("https://fonts.googleapis.com/css2?family=Lato&family=Montserrat&family=Oswald&family=Raleway&display=swap");
 
 
@@ -24,3 +26,7 @@ a {
     color: inherit;
   }
   
+
+a {
+    text-decoration: none;
+}

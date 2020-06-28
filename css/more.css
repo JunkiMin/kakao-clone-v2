@@ -1,0 +1,45 @@
+.more__btn-list {
+  display : flex;
+  /* flex-wrap : wrap; */
+  justify-content: space-around
+}
+
+.more__suggestions-list {
+    display : flex;
+    justify-content: space-around;
+  }
+
+  .more__suggestion-icon,
+  .more__btn-icon{
+    display:block;
+  }
+
+  .more__suggestions-title{
+      border-top :  solid grey;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      margin-top:10px;
+      margin-bottom:10px;
+  }
+
+  .more__suggestions.suggestion,.more__btn{
+    
+    text-align : center;
+    
+  }
+
+ .more__btn-title, .more__suggestion-title{
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.more__btn{
+
+    margin-right : 5%;
+}
+
+.more__btn-list{
+
+    margin-bottom: 10px;
+}

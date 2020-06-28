@@ -1,0 +1,23 @@
+.find__header-list{
+    display:flex;
+    
+}
+
+.header-button__icon
+{
+  display:block;
+  text-align: center;
+}
+
+.more__btn-title, .more__suggestion-title{
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+  .find__header-list {
+    display : flex;
+    justify-content: space-around;
+  }
+
