@@ -1,100 +1,235 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script
-      src="https://kit.fontawesome.com/1ab7effbec.js"
-      crossorigin="anonymous"
-    ></script>
-    <link rel="stylesheet" href="css/style.css" />
-    <title>KAKAO-CLONE-PROJECT</title>
-  </head>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-  <body>
-    <div class="status-bar-background">
-      <div class="status-bar">
-        <div class="status-bar__column" id="Current--time">
-          <div class="status-bar__clock">22:00</div>
-        </div>
-        <!-- 메뉴 최상단 스테이터스 바 -->
-        <div class="status-bar__column" id="Status--symbols">
-          <i class="far fa-clock"></i>
-          <i class="fas fa-volume-mute"></i>
-          <i class="fas fa-wifi"></i>
-          <span class="status-bar__battery-full">100%</span>
-          <i class="fas fa-battery-full"></i>
-        </div>
-      </div>
-    </div>
+  <title>191013SideScrollRunnerAnalysis</title>
 
-    <header class="header">
-      <div class="header__column">
-        <h1 class="header__title">Chats</h1>
-      </div>
+  <script src="//cdn.jsdelivr.net/npm/phaser@3.20.0/dist/phaser.js"></script>
 
-      <div class="header__column">
-        <span class="header__icon"><i class="fas fa-search"></i></span>
-        <span class="header__icon"><i class="far fa-comment"></i></span>
-        <span class="header__icon"><i class="fas fa-cog"></i></span>
-      </div>
-    </header>
+  <style type="text/css">
+      body {
+          margin: 0;
+      }
+  </style>
 
-    <main class="chats">
-      <!--  Kind of "tag" -->
-      <ul class="chats__list">
-        <li class="chats__chat chat">
-          <a href="chat.html">
-            <div class="chats__chat friend friend--lg">
-              <div class="friends__column">
-                <img
-                  class="friend__avartar g-avartar"
-                  src="images/idphoto.jpeg"
-                />
-                <div class="friend__content">
-                  <span class="friend__username">
-                    lynn
-                  </span>
-                  <span class="friend__bottom-text"> Going home</span>
-                </div>
-              </div>
+  <!-- 191013 이 코드를 분석하고 주석을 작성하는 데 꽤 오랜시간을 썼어요. 아주 기초적인 사이드 스크롤 플랫포머 게임의 코드인데, 다음 공부를 할때 주석을 한번 더 찬찬히 보면서 복습을 하는 게 좋을 것 같네요. -->
 
-              <div class="friend__column">
-                <span class="chat__timestamp"> yesterday</span>
-              </div>
-            </div>
-          </a>
-        </li>
-      </ul>
-    </main>
+</head>
 
-    <nav class="navigation">
-      <ul class="nav__list">
-        <!-- li stands for Unordered List, Of course There are Ordered List, Discription List -->
-        <!-- li stands for List Item///-->
+<body>
 
-        <li class="nav__list-item">
-          <a href="friends.html" class="nav__list-link">
-            <i class="far fa-user"></i>
-          </a>
-        </li>
-        <li class="nav__list-item">
-          <a href="index.html" class="nav__list-link">
-            <div class="nav__badge">8</div>
-            <i class="fas fa-comment"></i>
-          </a>
-        </li>
-        <li class="nav__list-item">
-          <a href="find.html" class="nav__list-link">
-            <i class="fas fa-search"></i>
-          </a>
-        </li>
-        <li class="nav__list-item">
-          <a href="more.html" class="nav__list-link">
-            <i class="far fa-caret-square-down"></i>
-          </a>
-        </li>
-      </ul>
-    </nav>
-  </body>
+  <script type="text/javascript">
+
+    var game;
+
+    // 초기설정이에요
+    var gameOptions = {
+        platformStartSpeed: 350,
+        spawnRange: [100, 350],
+        platformSizeRange: [100, 500],
+        playerGravity: 980,
+        jumpForce: 400,
+        playerStartPosition: 200,
+        jumps: 20000000
+    };
+
+    window.onload = function() {
+
+        // 캔버스, 씬 등 게임 환경의 설정이에요
+        var gameConfig = {
+            type: Phaser.AUTO,
+            width: 768,
+            height: 432,
+            scene: playGame,
+            backgroundColor: 0x444444,
+            physics: {
+                default: "arcade"
+            }
+        };
+
+        game = new Phaser.Game(gameConfig);
+
+        //화면이 브라우저 창 크기에 반응할 수 있도록 하는 코드에요
+        window.focus();
+        resize();
+        window.addEventListener("resize", resize, false);
+    };
+
+
+    class playGame extends Phaser.Scene{
+
+        // 씬의 이름을 정하고, 씬을 건설해요
+        constructor(){
+            super("PlayGame");
+        }
+
+
+        // 인게임에서 이용할 이미지 리소스를 불러와요
+        preload(){
+            this.load.image("platform", "./assets/Terrain.png");
+            this.load.image("player", "./assets/PlayerDefault.png");
+        }
+
+
+        create(){
+
+            // 플랫폼 그룹 (화면에 등장하는 플랫폼의 집합)
+            // 플랫폼 그룹에서 플랫폼이 사라지면 (화면에서 사라진 플랫폼) 플랫폼 풀에 추가돼요
+            this.platformGroup = this.add.group({
+                removeCallback: function(platform){
+                    platform.scene.platformPool.add(platform);
+                }
+            });
+
+            // 플랫폼 풀 (화면에서 사라진 플랫폼의 집합)
+            // 플랫폼 풀에서 플랫폼이 사라지면 플랫폼 그룹에 추가돼요
+            this.platformPool = this.add.group({
+                removeCallback: function(platform){
+                    platform.scene.platformGroup.add(platform);
+                }
+            });
+
+            // 연속된 점프 횟수의 카운터
+            this.playerJumps = 0;
+
+            // 게임 시작과 동시에 등장하는 가장 첫번째 플랫폼을 만들어주어요. (안정적인 시작을 위해) 캔버스의 크기와 동일한 가로 사이즈로 설정하고, 화면 가로 정중앙에 위치해야하므로 피벗의 위치(개체의 중앙점)를 캔버스의 중앙에 맞춰주어요
+            this.addPlatform(game.config.width, game.config.width / 2);
+
+            // 플레이어의 시작 위치를 정해주어요
+            this.player = this.physics.add.sprite(gameOptions.playerStartPosition, game.config.height / 2, "player");
+
+            // 플레이어에게 중력을 적용해주어요
+            this.player.setGravityY(gameOptions.playerGravity);
+
+            // 플레이어와 플랫폼 그룹간의 충돌 환경을 설정해주어요
+            this.physics.add.collider(this.player, this.platformGroup);
+
+            // 인풋을 감지하고 그 반응을 설정해요
+            this.input.on("pointerdown", this.jump, this);
+        }
+
+        addPlatform(platformWidth, posX){
+            var platform;
+            // 함수 addPlatform는 (플랫폼 너비, 플랫폼 x위치) 를 입력하면 해당 사양에 맞추어 화면상에 플랫폼을 더해주는 함수에요.
+            //이 게임의 핵심 코드로써, 플랫폼을 미리 만들어두는 것이 아니라, 게임 씬의 create 단계에서 이 함수를 정의하여 게임 내내 재사용하게 돼요
+
+            if(this.platformPool.getLength()){
+                // 플랫폼 풀 집합에 개체가 들어있나 확인하고, 개체가 있을 경우 바로 밑의 명령을 진행해요
+
+                platform = this.platformPool.getFirst();
+                // 플랫폼 풀 집합 중 첫번째 개체를 (다음 등장할) 플랫폼으로 지정해요
+
+                platform.x = posX;
+                // 위에서 지정한 플랫폼의 x위치를 곧 플랫폼이 화면상에 등장할 x위치로 지정해주어요
+
+                platform.active = true;
+                platform.visible = true;
+                // 플랫폼이 화면에 나타날 수 있도록 활성화
+
+                this.platformPool.remove(platform);
+                // 플랫폼 풀 집합에서 해당 플랫폼을 제거해주어요
+            }
+
+            else{
+                // 플랫폼 풀 집합에 개체가 없을 경우 새로운 플랫폼 개체를 만들어요
+
+                platform = this.physics.add.sprite(posX, game.config.height * 0.8, "platform");
+                // 캔버스 세로길이의 0.8에 해당하는 y위치와 입력된 x위치에 플랫폼 개체를 생성해요
+
+                platform.setImmovable(true);
+
+                platform.setVelocityX(gameOptions.platformStartSpeed * -1);
+                // 초기설정에서 지정한 플랫폼 속도를 플랫폼 개체에 부여해주어요
+
+                this.platformGroup.add(platform);
+                // 플랫폼 그룹 집합에 플랫폼 개체를 추가해요
+            }
+
+            platform.displayWidth = platformWidth;
+            // 입력된 너비를 플랫폼의 너비에 대입해주어요
+
+
+            this.nextPlatformDistance = Phaser.Math.Between(gameOptions.spawnRange[0], gameOptions.spawnRange[1]);
+            // 초기설정에서 정해준 재생성 범위의 최솟값[0]부터 최댓값[1] 사이의 수를 임의로 추출해, 다음 플랫폼이 생성되기까지의 거리(플랫폼 사이의 거리)로 설정해주어요
+        }
+
+        // 플레이어는 1. 지상에 있을 때 2.혹은 아직 점프가능횟수가 남아있고 첫번째 점프를 지상에서 수행했을 경우에 - 점프할 수 있어요.
+        jump(){
+            if(this.player.body.touching.down || (this.playerJumps > 0 && this.playerJumps < gameOptions.jumps)){
+                if(this.player.body.touching.down){
+                    this.playerJumps = 0;
+                }
+                this.player.setVelocityY(gameOptions.jumpForce * -1);
+                this.playerJumps ++;
+            }
+        }
+
+        update(){
+
+            if(this.player.y > game.config.height){
+                this.scene.start("PlayGame");
+            }
+            // 게임오버; 플레이어의 y위치가 캔버스 세로길이를 넘어가면 게임 씬을 다시 시작해요
+
+            this.player.x = gameOptions.playerStartPosition;
+            // 플레이어의 x위치는 게임시작시의 위치와 계속 동일하도록 업데이트해주어요
+
+            // 플랫폼의 재활용
+            var minDistance = game.config.width;
+
+            this.platformGroup.getChildren().forEach(function(platform){
+
+                var platformDistance = game.config.width - platform.x - platform.displayWidth / 2;
+                // platformDistance는 플랫폼 개체의 우변으로부터 캔버스 우변까지의 길이를 의미해요
+
+                minDistance = Math.min(minDistance, platformDistance);
+                // platformDistance와 캔버스 전체의 길이 중 작은 값을 minDistance에 저장해요
+                // 다만 플랫폼 개체의 우변길이로부터 캔버스 우변까지의 길이가 캔버스 전체 가로길이보다 길 일이 거의 없으므로 (강제로 지정하지 않는 이상) minDistance에는 마지막 플랫폼의 우변길이로부터 캔버스의 우변길이 까지의 거리가 계속 저장돼요
+                // 이 값은 이후 다음 플랫폼을 생성하는데에 이용돼요
+
+                if(platform.x < - platform.displayWidth / 2){
+                    this.platformGroup.killAndHide(platform);
+                    this.platformGroup.remove(platform);
+                // 플랫폼의 x 좌표가 -(플랫폼 가로반지름)보다 작아지면, 즉, 플랫폼이 완전히 화면에서 사라지면 플랫폼을 사라지게 해요
+                }
+
+            }, this);
+
+            // 새로운 플랫폼을 추가해요
+            if(minDistance > this.nextPlatformDistance){
+              // 최근 플랫폼 개체의 우변 ~ 캔버스 우변 사이의 거리가, 초기설정에서 지정한 플랫폼 사이의 거리 범위 (spawnRange) 보다 커지는 순간에 밑의 명령을 실행해요
+
+                var nextPlatformWidth = Phaser.Math.Between(gameOptions.platformSizeRange[0], gameOptions.platformSizeRange[1]);
+                // 초기설정에서 지정한 플랫폼 사이즈의 최솟값[0]부터 최댓값[1] 사이의 임의의 수를 추출해 새로 생성할 플랫폼의 너비로 지정해주어요
+
+                this.addPlatform(nextPlatformWidth, game.config.width + nextPlatformWidth / 2);
+                // 위에서 정해진 값들 (다음 플랫폼의 너비, 캔버스 너비 + 다음 플랫폼의 가로반지름값)을 addPlatform함수에 넣어주어서, 각각 플랫폼 너비, x위치값으로 이용할 수 있도록 해주어요
+            }
+        }
+    }
+
+    // 캔버스를 반응형으로 작동하도록 해주는 함수에요
+    function resize(){
+        var canvas = document.querySelector("canvas");
+        var windowWidth = window.innerWidth;
+        var windowHeight = window.innerHeight;
+        var windowRatio = windowWidth / windowHeight;
+        var gameRatio = game.config.width / game.config.height;
+        if(windowRatio < gameRatio){
+            canvas.style.width = windowWidth + "px";
+            canvas.style.height = (windowWidth / gameRatio) + "px";
+        }
+        else{
+            canvas.style.width = (windowHeight * gameRatio) + "px";
+            canvas.style.height = windowHeight + "px";
+        }
+    }
+
+
+  </script>
+
+
+</body>
 </html>
